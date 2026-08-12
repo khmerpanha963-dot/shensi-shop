@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Login | Shensi Store</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+</head>
+
+<body>
+
+<main class="container">
+    <section class="glass login-box">
+        <img src="{{ url_for('static', filename='images/dexdexx.PNG') }}" class="login-logo">
+        <h2>🔐 Admin Login</h2>
+
+        {% if error %}
+        <p class="login-error">{{ error }}</p>
+        {% endif %}
+
+        <form method="POST">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+
+            <button type="submit" class="btn-save">Login</button>
+        </form>
+    </section>
+</main>
+
+</body>
+</html>

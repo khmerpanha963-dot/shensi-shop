@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment Successful | MLBB Topup</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+    --primary: #4f46e5;
+    --secondary: #ec4899;
+    --bg: #f3f4f6;
+    --white: #ffffff;
+    --dark: #111827;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background: var(--bg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.success-card {
+    background: var(--white);
+    padding: 3rem 2rem;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    animation: fadeIn 0.6s ease-out;
+}
+
+.success-card h2 {
+    font-size: 1.8rem;
+    color: var(--primary);
+    margin-bottom: 1rem;
+}
+
+.success-card p {
+    font-size: 1.1rem;
+    color: var(--dark);
+    margin-bottom: 2rem;
+}
+
+.btn {
+    display: inline-block;
+    padding: 0.8rem 2rem;
+    font-weight: bold;
+    color: #fff;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 50px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+@keyframes fadeIn {
+    from {opacity: 0; transform: translateY(-20px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+</style>
+</head>
+<body>
+
+<div class="success-card">
+    <h2>✅ Payment Successful</h2>
+    <p>Thank you for your payment! Your transaction has been completed successfully.</p>
+    <a class="btn" href="/mlbb_topup">Continue Shopping</a>
+</div>
+
+</body>
+</html>

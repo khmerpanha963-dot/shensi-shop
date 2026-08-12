@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roblox Topup | Scan to Pay</title>
+<style>
+:root {
+    --primary: #4CAF50;
+    --success: #4CAF50;
+    --danger: #f44336;
+    --warning: #ff9800;
+    --bg-dark: #0f0f23;
+    --bg-card: #1a1a2e;
+    --text-light: #e0e0e0;
+    --text-muted: #999;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.payment-card {
+    background: var(--bg-card);
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    max-width: 450px;
+    width: 100%;
+    overflow: hidden;
+    animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 25px;
+    text-align: center;
+    color: white;
+}
+
+.card-header h2 {
+    font-size: 1.8rem;
+    margin-bottom: 8px;
+}
+
+.card-header span {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.card-body {
+    padding: 30px;
+}
+
+.info-box {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 25px;
+}
+
+.info-box p {
+    color: var(--text-light);
+    font-size: 1rem;
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.info-box b {
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.qr-box {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.qr-box img {
+    width: 100%;
+    max-width: 280px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.status {
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--warning);
+    margin-bottom: 15px;
+    padding: 15px;
+    background: rgba(255,152,0,0.1);
+    border-radius: 10px;
+    border: 1px solid rgba(255,152,0,0.3);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+.countdown {
+    text-align: center;
+    font-size: 1rem;
+    color: var(--text-light);
+    background: rgba(255,255,255,0.05);
+    padding: 12px;
+    border-radius: 8px;
+}
+
+.countdown span {
+    font-weight: bold;
+    color: var(--primary);
+    font-size: 1.2rem;
+}
+
+.card-footer {
+    background: rgba(0,0,0,0.2);
+    padding: 15px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.game-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+}
+
+.game-logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.game-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.game-details {
+    flex: 1;
+}
+
+.game-details h3 {
+    color: var(--text-light);
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+}
+
+.game-details p {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin: 3px 0;
+}
+
+.instructions {
+    background: rgba(76,175,80,0.1);
+    border: 1px solid rgba(76,175,80,0.3);
+    border-radius: 10px;
+    padding: 15px;
+    margin-top: 20px;
+}
+
+.instructions h4 {
+    color: var(--primary);
+    font-size: 0.95rem;
+    margin-bottom: 10px;
+}
+
+.instructions ol {
+    color: var(--text-light);
+    font-size: 0.85rem;
+    padding-left: 20px;
+}
+
+.instructions li {
+    margin: 8px 0;
+    line-height: 1.5;
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+    
+    .payment-card {
+        border-radius: 15px;
+    }
+    
+    .card-header h2 {
+        font-size: 1.5rem;
+    }
+    
+    .card-body {
+        padding: 20px;
+    }
+    
+    .qr-box {
+        padding: 15px;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="payment-card">
+
+    <!-- HEADER -->
+    <div class="card-header">
+        <h2>🎮 Scan to Pay</h2>
+        <span>KHQR • Bakong Payment</span>
+    </div>
+
+    <!-- BODY -->
+    <div class="card-body">
+
+        <!-- Game Info -->
+        <div class="game-info">
+            <div class="game-logo">
+                <img src="static/images/roblox.jpg" alt="Roblox" onerror="this.src='https://via.placeholder.com/60/667eea/ffffff?text=ROBLOX'">
+            </div>
+            <div class="game-details">
+                <h3>Roblox</h3>
+                <p>Username: {{ username_input }}</p>
+            </div>
+        </div>
+
+        <!-- Order Info -->
+        <div class="info-box">
+            <p><b>Package:</b> <span>{{ item.name }}</span></p>
+            <p><b>Amount:</b> <span style="color: var(--primary); font-size: 1.2rem; font-weight: bold;">${{ amount }}</span></p>
+        </div>
+
+        <!-- QR Code -->
+        <div class="qr-box">
+            <img src="data:image/png;base64,{{ qr_data }}" alt="QR Code">
+        </div>
+
+        <!-- Status -->
+        <div class="status" id="status">⏳ Waiting for payment...</div>
+        
+        <!-- Countdown -->
+        <div class="countdown">
+            Time left: <span id="countdown">{{ timeout }}</span>s
+        </div>
+
+        <!-- Instructions -->
+        <div class="instructions">
+            <h4>📱 How to Pay:</h4>
+            <ol>
+                <li>Open any Bakong-enabled banking app</li>
+                <li>Scan the QR code above</li>
+                <li>Confirm the payment amount</li>
+                <li>Complete the transaction</li>
+            </ol>
+        </div>
+
+    </div>
+
+    <div class="card-footer">
+        🔒 Secure Roblox Topup • Powered by Shensi Store
+    </div>
+
+</div>
+
+<script>
+let timeLeft = {{ timeout }};
+const countdownEl = document.getElementById("countdown");
+const statusEl = document.getElementById("status");
+let paymentCompleted = false;
+
+// Countdown timer
+const timer = setInterval(() => {
+    if(paymentCompleted) return;
+    timeLeft--;
+    countdownEl.innerText = timeLeft;
+
+    // Warning at 30 seconds
+    if(timeLeft === 30) {
+        countdownEl.style.color = 'var(--warning)';
+    }
+
+    // Critical at 10 seconds
+    if(timeLeft <= 10) {
+        countdownEl.style.color = 'var(--danger)';
+        countdownEl.parentElement.style.animation = 'pulse 0.5s infinite';
+    }
+
+    if(timeLeft <= 0){
+        clearInterval(timer);
+        statusEl.innerText = "❌ QR code expired";
+        statusEl.style.color = "var(--danger)";
+        statusEl.style.background = "rgba(244, 67, 54, 0.1)";
+        statusEl.style.borderColor = "rgba(244, 67, 54, 0.3)";
+        
+        // Redirect back after 2 seconds
+        setTimeout(() => {
+            window.location.href = "/roblox_topup";
+        }, 2000);
+    }
+}, 1000);
+
+// Poll backend for payment status
+const poll = setInterval(async () => {
+    if(paymentCompleted) return;
+    try{
+        const res = await fetch("/check_payment_status?bill_number={{ md5 }}");
+        const data = await res.json();
+
+        if(data.status === "PAID"){
+            clearInterval(timer);
+            clearInterval(poll);
+            paymentCompleted = true;
+            statusEl.innerText = "✅ Payment Successful!";
+            statusEl.style.color = "var(--success)";
+            statusEl.style.background = "rgba(76, 175, 80, 0.1)";
+            statusEl.style.borderColor = "rgba(76, 175, 80, 0.3)";
+            statusEl.style.animation = "none";
+            
+            // Show success message
+            setTimeout(() => {
+                statusEl.innerText = "✅ Robux will be delivered shortly!";
+            }, 1000);
+            
+            // Redirect to home after delay
+            setTimeout(() => {
+                window.location.href = "/";
+            }, 3000);
+        }
+
+        if(data.status === "EXPIRED"){
+            clearInterval(timer);
+            clearInterval(poll);
+            statusEl.innerText = "❌ Payment Expired";
+            statusEl.style.color = "var(--danger)";
+            statusEl.style.background = "rgba(244, 67, 54, 0.1)";
+            statusEl.style.borderColor = "rgba(244, 67, 54, 0.3)";
+            
+            setTimeout(() => {
+                window.location.href = "/roblox_topup";
+            }, 2000);
+        }
+    }catch(e){
+        console.log("Error checking payment:", e);
+    }
+}, 3000); // poll every 3 seconds
+
+// Prevent page unload during payment
+window.addEventListener('beforeunload', (e) => {
+    if (!paymentCompleted && timeLeft > 0) {
+        e.preventDefault();
+        e.returnValue = '';
+    }
+});
+</script>
+
+</body>
+</html>

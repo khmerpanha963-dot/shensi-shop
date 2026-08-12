@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roblox | Topup</title>
+<link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+
+<!-- Welcome Modal -->
+<div id="welcome-modal" class="welcome-modal">
+    <div class="welcome-content">
+        <img src="{{ url_for('static', filename='images/dexdexx.PNG') }}" alt="Shensi Store Logo">
+        <h1>Welcome to Shensi Store</h1>
+        <p>Your trusted source for Roblox top-ups. Get Robux instantly and securely!</p>
+        <button class="welcome-btn" onclick="enterSite()">Enter Site</button>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div id="loading-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center;">
+    <div style="text-align:center; color:#fff;">
+        <div class="spinner" style="border:4px solid #f3f3f3; border-top:4px solid #3498db; border-radius:50%; width:50px; height:50px; animation:spin 1s linear infinite; margin:0 auto 20px;"></div>
+        <p>Processing your order...</p>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div id="success-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10000; justify-content:center; align-items:center;">
+    <div style="background:#1a1a2e; padding:2rem; border-radius:15px; text-align:center; max-width:400px; margin:20px;">
+        <div style="font-size:4rem; margin-bottom:1rem;">✅</div>
+        <h2 style="color:#4CAF50; margin-bottom:1rem;">Order Successful!</h2>
+        <p style="color:#bbb; margin-bottom:1.5rem;">Your Robux will be delivered shortly.</p>
+        <button onclick="closeSuccessModal()" style="background:#4CAF50; color:#fff; border:none; padding:12px 30px; border-radius:8px; cursor:pointer; font-size:1rem;">Continue</button>
+    </div>
+</div>
+
+<!-- Notification Toast -->
+<div id="notification-toast" style="display:none; position:fixed; top:20px; right:20px; background:#4CAF50; color:#fff; padding:15px 25px; border-radius:8px; z-index:10001; box-shadow:0 4px 12px rgba(0,0,0,0.3); animation:slideIn 0.3s ease-out;">
+    <span id="toast-message"></span>
+</div>
+
+<nav>
+    <a href="/" style="text-decoration: none;">
+        <div class="container logo">
+            <img src="{{ url_for('static', filename='images/dexdexx.PNG') }}">
+            <h1 class="nav-brand-title">Shensi Store</h1>
+        </div>
+    </a>
+</nav>
+
+<main class="container">
+
+<section class="banner">
+    <img src="{{ url_for('static', filename='images/hello1x.jpg') }}" id="banner-img">
+    <div class="banner-indicators" style="position:absolute; bottom:15px; left:50%; transform:translateX(-50%); display:flex; gap:8px;">
+        <span class="indicator active" data-index="0"></span>
+        <span class="indicator" data-index="1"></span>
+    </div>
+</section>
+
+<!-- Roblox Info Card -->
+<section class="glass game-info-section" style="display:flex; align-items:center; gap:1rem; padding:1rem 1.5rem; margin:1.5rem 0;">
+    <div class="game-logo" style="flex-shrink:0;">
+        <img src="{{ url_for('static', filename='images/roblox.jpg') }}" alt="Roblox Logo" style="width:80px; height:auto; border-radius:10px;">
+    </div>
+    <div class="game-details" style="flex:1;">
+        <h2 style="margin:0 0 0.3rem 0; font-size:1.5rem; color:#fff;">Roblox</h2>
+        <p style="margin:0.2rem 0; color:#bbb;">✅ Safety Guaranteed</p>
+        <p style="margin:0.2rem 0; color:#bbb;">⚡ Instant Delivery</p>
+    </div>
+</section>
+
+<form method="POST" id="topup-form">
+
+<section class="glass">
+    <h2>🎮 Account Information</h2>
+
+    <div class="input-row">
+        <div class="input-group" style="flex: 2;">
+            <label>Username</label>
+            <!-- FIXED: Changed name from "username" to "username_input" -->
+            <input type="text" name="username_input" id="username_input" placeholder="Enter Roblox Username" required>
+        </div>
+        <div class="input-group" style="flex: 1;">
+            <label>Password</label>
+            <!-- FIXED: Changed name from "password" to "password_input" -->
+            <input type="password" name="password_input" id="password_input" placeholder="Password" required>
+        </div>
+    </div>
+
+    <button type="button" class="btn" onclick="checkAccount()" id="check-account-btn">Verify Account</button>
+    <p id="account-helper" style="margin-top:0.5rem; font-size:0.9rem; color:#999;">
+        សូមបំពេញឈ្មោះអ្នកប្រើ និងពាក្យសម្ងាត់ដើម្បីធ្វើការផ្ទៀងផ្ទាត់គណនី Roblox របស់អ្នក។
+    </p>
+    <p id="account-result" style="margin-top:.8rem"></p>
+    
+    <!-- Profile Display -->
+    <div id="profile-display" style="display:none; margin-top:1rem; padding:1rem; background:rgba(76, 175, 80, 0.1); border-radius:10px; border:1px solid rgba(76, 175, 80, 0.3);">
+        <div style="display:flex; align-items:center; gap:1rem;">
+            <img id="profile-avatar" src="" alt="Profile Avatar" style="width:60px; height:60px; border-radius:50%; border:3px solid #4CAF50;">
+            <div>
+                <h3 id="profile-username" style="margin:0; color:#4CAF50; font-size:1.2rem;"></h3>
+                <p style="margin:0.3rem 0 0 0; color:#bbb; font-size:0.9rem;">✅ Account Verified</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recently Used Accounts -->
+    <div id="recent-accounts" style="margin-top:1rem; display:none;">
+        <label style="color:#bbb; font-size:0.9rem; margin-bottom:0.5rem; display:block;">Recently Used Accounts:</label>
+        <div id="recent-accounts-list" style="display:flex; gap:10px; flex-wrap:wrap;"></div>
+    </div>
+</section>
+
+<section class="glass packages">
+    <h2>💎 Select Robux Package</h2>
+    
+    <!-- Package Filter -->
+    <div style="display:flex; gap:10px; margin-bottom:1rem; flex-wrap:wrap;">
+        <button type="button" class="filter-btn active" onclick="filterPackages('all')">All</button>
+        <button type="button" class="filter-btn" onclick="filterPackages('small')">Small</button>
+        <button type="button" class="filter-btn" onclick="filterPackages('medium')">Medium</button>
+        <button type="button" class="filter-btn" onclick="filterPackages('large')">Large</button>
+    </div>
+
+    <div class="package-grid">
+        {% for item in items %}
+        <div class="package" onclick="selectItem('{{ item.id }}', this)" data-category="{% if item.price < 5 %}small{% elif item.price < 15 %}medium{% else %}large{% endif %}" data-price="{{ item.price }}">
+
+            <img src="{{ url_for('static', filename='images/ddd.PNG') }}">
+
+            <h3>{{ item.name }}</h3>
+            <p>${{ "%.2f"|format(item.price) }}</p>
+            <div class="package-badge" style="display:none; position:absolute; top:10px; right:10px; background:#f44336; color:#fff; padding:5px 10px; border-radius:5px; font-size:0.75rem;">HOT</div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<input type="hidden" name="item_id" id="item_id">
+
+<!-- Order Summary -->
+<section class="glass" id="order-summary" style="display:none;">
+    <h2>📋 Order Summary</h2>
+    <div style="padding:1rem; background:rgba(255,255,255,0.05); border-radius:8px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+            <span style="color:#bbb;">Username:</span>
+            <span style="color:#fff;" id="summary-username">-</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+            <span style="color:#bbb;">Package:</span>
+            <span style="color:#fff;" id="summary-package">-</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:1.2rem; font-weight:bold; margin-top:1rem; padding-top:1rem; border-top:1px solid rgba(255,255,255,0.1);">
+            <span style="color:#4CAF50;">Total:</span>
+            <span style="color:#4CAF50;" id="summary-price">$0.00</span>
+        </div>
+    </div>
+</section>
+
+<section class="glass">
+    <h2>💳 Payment Method</h2>
+    <p>✅ KHQR – Scan with any banking app</p>
+
+    <label style="margin-top:1rem">
+        <input type="checkbox" id="terms-checkbox" required> I agree to terms
+    </label>
+
+    <button type="submit" class="btn" id="buy-btn">
+        <span class="btn-text">Buy Now</span>
+        <span class="btn-loader" style="display:none;">⏳</span>
+    </button>
+</section>
+
+</form>
+
+<!-- FAQ Section -->
+<section class="glass">
+    <h2>❓ Frequently Asked Questions</h2>
+    <div class="faq-container">
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-question" style="display:flex; justify-content:space-between; cursor:pointer; padding:1rem; background:rgba(255,255,255,0.05); border-radius:8px; margin-bottom:0.5rem;">
+                <span>How long does delivery take?</span>
+                <span class="faq-icon">+</span>
+            </div>
+            <div class="faq-answer" style="display:none; padding:1rem; color:#bbb; font-size:0.9rem;">
+                Robux are delivered instantly after payment confirmation, usually within 1-5 minutes.
+            </div>
+        </div>
+        
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-question" style="display:flex; justify-content:space-between; cursor:pointer; padding:1rem; background:rgba(255,255,255,0.05); border-radius:8px; margin-bottom:0.5rem;">
+                <span>Is it safe to buy Robux here?</span>
+                <span class="faq-icon">+</span>
+            </div>
+            <div class="faq-answer" style="display:none; padding:1rem; color:#bbb; font-size:0.9rem;">
+                Yes! We use official top-up methods. Your account is 100% safe and will never be banned.
+            </div>
+        </div>
+        
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-question" style="display:flex; justify-content:space-between; cursor:pointer; padding:1rem; background:rgba(255,255,255,0.05); border-radius:8px; margin-bottom:0.5rem;">
+                <span>What if I enter the wrong username?</span>
+                <span class="faq-icon">+</span>
+            </div>
+            <div class="faq-answer" style="display:none; padding:1rem; color:#bbb; font-size:0.9rem;">
+                Please double-check your Username and Password before purchasing. Contact support immediately if you made an error.
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="glass contact">
+    <h2>Contact us</h2>
+    <div class="contact-grid">
+
+        <!-- Facebook Card -->
+        <a href="https://www.facebook.com/admin" target="_blank" class="contact-card">
+            <div class="icon-wrapper">
+                <img src="{{ url_for('static', filename='images/IMG_1094.JPG') }}" alt="Facebook">
+            </div>
+            <div class="contact-info">
+                <h3>Facebook</h3>
+                <p>Chat with us anytime on Messenger!</p>
+            </div>
+        </a>
+
+        <!-- TikTok Card -->
+        <a href="https://www.tiktok.com/@admin" target="_blank" class="contact-card">
+            <div class="icon-wrapper">
+                <img src="{{ url_for('static', filename='images/IMG_1090.JPG') }}" alt="TikTok">
+            </div>
+            <div class="contact-info">
+                <h3>TikTok</h3>
+                <p>Follow us for updates and tips!</p>
+            </div>
+        </a>
+
+        <!-- Telegram Card -->
+        <a href="https://t.me/admin" target="_blank" class="contact-card">
+            <div class="icon-wrapper">
+                <img src="{{ url_for('static', filename='images/IMG_1091.JPG') }}" alt="Telegram">
+            </div>
+            <div class="contact-info">
+                <h3>Telegram</h3>
+                <p>Join our Telegram for instant support!</p>
+            </div>
+        </a>
+
+    </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+    <div class="footer-links">
+        <a href="#">Contact Us</a> •
+        <a href="#">Privacy Policy</a> |
+        <a href="#">Terms and Condition</a>
+    </div>
+
+    <div class="footer-copy">
+        Copyright © Shensi Store. All Rights Reserved.
+    </div>
+
+    <div class="footer-pay">
+        <span>Accept Payment:</span>
+        <img src="/static/images/bakong.webp" alt="BAKONG">
+    </div>
+</footer>
+
+<style>
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes slideIn {
+    from { transform: translateX(400px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(400px); opacity: 0; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.filter-btn {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #bbb;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.filter-btn:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.2);
+    transform: translateY(-2px);
+}
+
+.filter-btn.active {
+    background: #4CAF50;
+    border-color: #4CAF50;
+    color: #fff;
+}
+
+.indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.indicator.active {
+    background: #4CAF50;
+    width: 30px;
+    border-radius: 5px;
+}
+
+.indicator:hover {
+    background: rgba(255,255,255,0.5);
+}
+
+.recent-account-btn {
+    padding: 8px 12px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    color: #bbb;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.85rem;
+}
+
+.recent-account-btn:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: #4CAF50;
+    color: #4CAF50;
+    transform: translateY(-2px);
+}
+
+.package {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.package::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+    transform: rotate(45deg);
+    transition: all 0.5s;
+}
+
+.package:hover::before {
+    left: 100%;
+}
+
+.package:hover {
+    transform: translateY(-5px);
+}
+
+.faq-item {
+    margin-bottom: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.faq-question:hover {
+    background: rgba(255,255,255,0.08);
+}
+
+.faq-icon {
+    transition: transform 0.3s ease;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.faq-item.active .faq-icon {
+    transform: rotate(45deg);
+}
+</style>
+
+<script>
+let accountValid = false;
+let selectedPackageData = null;
+let currentUsername = '';
+let orderCount = Math.floor(Math.random() * 150) + 50;
+let bannerInterval;
+let statsInterval;
+
+document.addEventListener("DOMContentLoaded", function() {
+    console.log('Initializing Shensi Store...');
+    initializeFormFields();
+    initializeBannerCycling();
+    initializeOrderCounter();
+    loadRecentAccounts();
+    addPopularBadges();
+    initializeAutoSave();
+    setupFormValidation();
+    initializeAnimations();
+    initializeInputValidation();
+    initializeScrollEffects();
+});
+
+function initializeFormFields() {
+    const usernameField = document.querySelector('[name="username_input"]');
+    const passwordField = document.querySelector('[name="password_input"]');
+    const savedUsername = sessionStorage.getItem('savedUsername');
+    const savedPassword = sessionStorage.getItem('savedPassword');
+    if (savedUsername) usernameField.value = savedUsername;
+    if (savedPassword) passwordField.value = savedPassword;
+}
+
+function initializeAutoSave() {
+    const usernameField = document.querySelector('[name="username_input"]');
+    const passwordField = document.querySelector('[name="password_input"]');
+    usernameField.addEventListener('input', function() {
+        sessionStorage.setItem('savedUsername', this.value);
+    });
+    passwordField.addEventListener('input', function() {
+        sessionStorage.setItem('savedPassword', this.value);
+    });
+}
+
+function initializeInputValidation() {
+    const usernameField = document.querySelector('[name="username_input"]');
+    const passwordField = document.querySelector('[name="password_input"]');
+    usernameField.addEventListener('input', function(e) {
+        this.value = this.value.replace(/[^a-zA-Z0-9_]/g, '');
+        if (this.value.length > 20) this.value = this.value.slice(0, 20);
+    });
+    usernameField.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); passwordField.focus(); }
+    });
+    passwordField.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); checkAccount(); }
+    });
+}
+
+function initializeBannerCycling() {
+    const bannerImg = document.getElementById('banner-img');
+    const banners = ["{{ url_for('static', filename='images/hello1x.jpg') }}", "{{ url_for('static', filename='images/hello1x.jpg') }}"];
+    let currentBannerIndex = 0;
+    bannerImg.style.transition = 'opacity 0.5s ease-in-out';
+    function switchBanner() {
+        currentBannerIndex = (currentBannerIndex + 1) % banners.length;
+        bannerImg.style.opacity = '0';
+        setTimeout(() => {
+            bannerImg.src = banners[currentBannerIndex];
+            bannerImg.style.opacity = '1';
+            updateIndicators(currentBannerIndex);
+        }, 500);
+    }
+    function updateIndicators(index) {
+        document.querySelectorAll('.indicator').forEach((ind, i) => {
+            ind.classList.toggle('active', i === index);
+        });
+    }
+    document.querySelectorAll('.indicator').forEach((ind, index) => {
+        ind.addEventListener('click', () => {
+            clearInterval(bannerInterval);
+            currentBannerIndex = index;
+            bannerImg.style.opacity = '0';
+            setTimeout(() => {
+                bannerImg.src = banners[index];
+                bannerImg.style.opacity = '1';
+                updateIndicators(index);
+            }, 500);
+            bannerInterval = setInterval(switchBanner, 6000);
+        });
+    });
+    bannerInterval = setInterval(switchBanner, 6000);
+}
+
+function initializeOrderCounter() {
+    const orderCountEl = document.getElementById('order-count');
+    if (!orderCountEl) return;
+    let count = orderCount;
+    function animateCount() {
+        let current = 0;
+        const increment = Math.ceil(count / 60);
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= count) { current = count; clearInterval(timer); }
+            orderCountEl.textContent = current;
+        }, 25);
+    }
+    animateCount();
+    statsInterval = setInterval(() => {
+        const oldCount = count;
+        count = Math.min(count + Math.floor(Math.random() * 4) + 1, 999);
+        if (count !== oldCount) {
+            orderCountEl.style.animation = 'pulse 0.5s ease';
+            orderCountEl.textContent = count;
+            setTimeout(() => { orderCountEl.style.animation = ''; }, 500);
+        }
+    }, 8000);
+}
+
+function initializeScrollEffects() {
+    const sections = document.querySelectorAll('.glass');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) entry.target.style.animation = 'fadeIn 0.6s ease-out forwards';
+        });
+    }, { threshold: 0.1 });
+    sections.forEach(section => observer.observe(section));
+}
+
+function initializeAnimations() {
+    const packages = document.querySelectorAll('.package');
+    packages.forEach((pkg, index) => {
+        pkg.style.opacity = '0';
+        pkg.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            pkg.style.transition = 'all 0.5s ease';
+            pkg.style.opacity = '1';
+            pkg.style.transform = 'translateY(0)';
+        }, index * 50);
+    });
+}
+
+function selectItem(id, el) {
+    document.getElementById("item_id").value = id;
+    document.querySelectorAll(".package").forEach(p => {
+        p.classList.remove("selected");
+        p.style.transform = 'scale(1)';
+    });
+    el.classList.add("selected");
+    el.style.transform = 'scale(1.05)';
+    setTimeout(() => { el.style.transform = 'scale(1)'; }, 200);
+    const packageName = el.querySelector('h3').textContent;
+    const packagePrice = el.querySelector('p').textContent;
+    selectedPackageData = { name: packageName, price: packagePrice };
+    updateOrderSummary();
+    showNotification('Package selected: ' + packageName);
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function filterPackages(category) {
+    const packages = document.querySelectorAll('.package');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    filterBtns.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    packages.forEach((pkg, index) => {
+        const pkgCategory = pkg.getAttribute('data-category');
+        if (category === 'all' || pkgCategory === category) {
+            pkg.style.display = 'block';
+            setTimeout(() => {
+                pkg.style.opacity = '1';
+                pkg.style.transform = 'scale(1)';
+            }, index * 30);
+        } else {
+            pkg.style.opacity = '0';
+            pkg.style.transform = 'scale(0.8)';
+            setTimeout(() => { pkg.style.display = 'none'; }, 300);
+        }
+    });
+    showNotification('Showing ' + (category === 'all' ? 'all packages' : category + ' packages'));
+}
+
+function addPopularBadges() {
+    const packages = document.querySelectorAll('.package');
+    const popularIndices = [2, 5, 8];
+    packages.forEach((pkg, index) => {
+        if (popularIndices.includes(index)) {
+            const badge = pkg.querySelector('.package-badge');
+            if (badge) {
+                badge.style.display = 'block';
+                badge.style.animation = 'pulse 2s infinite';
+            }
+        }
+    });
+}
+
+async function checkAccount() {
+    const username = document.querySelector('[name="username_input"]').value;
+    const password = document.querySelector('[name="password_input"]').value;
+    const result = document.getElementById("account-result");
+    const checkBtn = document.getElementById("check-account-btn");
+    const profileDisplay = document.getElementById("profile-display");
+    
+    profileDisplay.style.display = 'none';
+    
+    if (!username || !password) {
+        result.innerHTML = '<span style="color:#f44336;">⚠️ Please fill Username and Password</span>';
+        accountValid = false;
+        shakeElement(result);
+        return;
+    }
+    if (username.length < 3 || password.length < 6) {
+        result.innerHTML = '<span style="color:#f44336;">⚠️ Invalid credentials format</span>';
+        accountValid = false;
+        shakeElement(result);
+        return;
+    }
+    
+    checkBtn.disabled = true;
+    checkBtn.textContent = 'Verifying...';
+    checkBtn.style.opacity = '0.6';
+    result.innerHTML = '<span style="color:#ffa726;">🔄 Verifying account...</span>';
+    accountValid = false;
+    
+    try {
+        const response = await fetch('/api/verify_roblox_username', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username: username })
+        });
+        
+        const data = await response.json();
+        
+        console.log('API Response:', data);
+        
+        if (data.success && data.imageUrl) {
+            checkBtn.disabled = false;
+            checkBtn.textContent = 'Verify Account';
+            checkBtn.style.opacity = '1';
+            result.innerHTML = '';
+            
+            document.getElementById('profile-avatar').src = data.imageUrl;
+            document.getElementById('profile-username').textContent = username;
+            profileDisplay.style.display = 'block';
+            profileDisplay.style.animation = 'fadeIn 0.5s ease';
+            
+            currentUsername = username;
+            accountValid = true;
+            updateOrderSummary();
+            saveRecentAccount(username, password, data.imageUrl);
+            showNotification('Account verified successfully!', 'success');
+        } else {
+            checkBtn.disabled = false;
+            checkBtn.textContent = 'Verify Account';
+            checkBtn.style.opacity = '1';
+            result.innerHTML = '<span style="color:#f44336;">❌ Username not found. Please check and try again.</span>';
+            accountValid = false;
+            shakeElement(result);
+            showNotification('Username not found!', 'error');
+        }
+    } catch (error) {
+        console.error('Error verifying account:', error);
+        checkBtn.disabled = false;
+        checkBtn.textContent = 'Verify Account';
+        checkBtn.style.opacity = '1';
+        result.innerHTML = '<span style="color:#f44336;">⚠️ API error. Try again later.</span>';
+        accountValid = false;
+        shakeElement(result);
+        showNotification('API error. Try again later!', 'error');
+    }
+}
+
+function shakeElement(element) {
+    element.style.animation = 'shake 0.5s';
+    setTimeout(() => { element.style.animation = ''; }, 500);
+}
+
+function saveRecentAccount(username, password, avatarUrl = '') {
+    let recentAccounts = JSON.parse(sessionStorage.getItem('recentAccounts') || '[]');
+    const newAccount = { username, password, avatarUrl, timestamp: Date.now() };
+    recentAccounts = recentAccounts.filter(acc => acc.username !== username);
+    recentAccounts.unshift(newAccount);
+    recentAccounts = recentAccounts.slice(0, 3);
+    sessionStorage.setItem('recentAccounts', JSON.stringify(recentAccounts));
+    loadRecentAccounts();
+}
+
+function loadRecentAccounts() {
+    const recentAccounts = JSON.parse(sessionStorage.getItem('recentAccounts') || '[]');
+    const container = document.getElementById('recent-accounts');
+    const list = document.getElementById('recent-accounts-list');
+    if (recentAccounts.length === 0) { container.style.display = 'none'; return; }
+    container.style.display = 'block';
+    list.innerHTML = '';
+    recentAccounts.forEach((acc, index) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'recent-account-btn';
+        
+        const avatarHtml = acc.avatarUrl ? 
+            `<img src="${acc.avatarUrl}" style="width:24px; height:24px; border-radius:50%; margin-bottom:5px; border:2px solid rgba(255,255,255,0.2);">` : 
+            '';
+        
+        btn.innerHTML = `${avatarHtml}<div style="font-weight:bold; margin-bottom:3px;">${acc.username}</div>`;
+        btn.onclick = () => useRecentAccount(acc);
+        btn.style.opacity = '0';
+        btn.style.transform = 'translateY(10px)';
+        list.appendChild(btn);
+        setTimeout(() => {
+            btn.style.transition = 'all 0.3s ease';
+            btn.style.opacity = '1';
+            btn.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+}
+
+function useRecentAccount(account) {
+    const usernameField = document.querySelector('[name="username_input"]');
+    const passwordField = document.querySelector('[name="password_input"]');
+    const profileDisplay = document.getElementById('profile-display');
+    const result = document.getElementById("account-result");
+    
+    usernameField.value = account.username;
+    passwordField.value = account.password;
+    sessionStorage.setItem('savedUsername', account.username);
+    sessionStorage.setItem('savedPassword', account.password);
+    
+    result.innerHTML = '';
+    
+    if (account.avatarUrl) {
+        document.getElementById('profile-avatar').src = account.avatarUrl;
+        document.getElementById('profile-username').textContent = account.username;
+        profileDisplay.style.display = 'block';
+        profileDisplay.style.animation = 'fadeIn 0.5s ease';
+    } else {
+        result.innerHTML = `<span style="color:#4CAF50; font-weight:bold;">✅ Account Verified: ${account.username}</span>`;
+    }
+    
+    currentUsername = account.username;
+    accountValid = true;
+    updateOrderSummary();
+    showNotification('Account loaded: ' + account.username, 'success');
+}
+
+function updateOrderSummary() {
+    const username = document.querySelector('[name="username_input"]').value;
+    const summarySection = document.getElementById('order-summary');
+    if (!username || !accountValid || !selectedPackageData) {
+        summarySection.style.display = 'none';
+        return;
+    }
+    summarySection.style.display = 'block';
+    summarySection.style.animation = 'fadeIn 0.5s ease';
+    document.getElementById('summary-username').textContent = username;
+    document.getElementById('summary-package').textContent = selectedPackageData.name;
+    document.getElementById('summary-price').textContent = selectedPackageData.price;
+    summarySection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function setupFormValidation() {
+    const form = document.getElementById("topup-form");
+    const buyBtn = document.getElementById("buy-btn");
+    const termsCheckbox = document.getElementById("terms-checkbox");
+    termsCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+            buyBtn.style.opacity = '1';
+            buyBtn.style.transform = 'scale(1.02)';
+            setTimeout(() => { buyBtn.style.transform = 'scale(1)'; }, 200);
+        } else {
+            buyBtn.style.opacity = '0.7';
+        }
+    });
+    form.addEventListener("submit", function(e) {
+        e.preventDefault();
+        const itemId = document.getElementById("item_id").value;
+        const termsChecked = termsCheckbox.checked;
+        const username = document.querySelector('[name="username_input"]').value;
+        const password = document.querySelector('[name="password_input"]').value;
+        if (!username || !password) {
+            showNotification('Please fill in Username and Password!', 'error');
+            shakeElement(document.querySelector('.input-row'));
+            return;
+        }
+        if (!accountValid) {
+            showNotification('Please verify your account first!', 'error');
+            shakeElement(document.getElementById('check-account-btn'));
+            return;
+        }
+        if (!itemId) {
+            showNotification('Please select a Robux package!', 'error');
+            const packagesSection = document.querySelector('.packages');
+            packagesSection.scrollIntoView({ behavior: 'smooth' });
+            shakeElement(packagesSection);
+            return;
+        }
+        if (!termsChecked) {
+            showNotification('Please agree to the terms!', 'error');
+            shakeElement(termsCheckbox.parentElement);
+            return;
+        }
+        processOrder();
+    });
+}
+
+function processOrder() {
+    const loadingOverlay = document.getElementById('loading-overlay');
+    const buyBtn = document.getElementById('buy-btn');
+    const btnText = buyBtn.querySelector('.btn-text');
+    const btnLoader = buyBtn.querySelector('.btn-loader');
+    btnText.style.display = 'none';
+    btnLoader.style.display = 'inline';
+    buyBtn.disabled = true;
+    buyBtn.style.opacity = '0.7';
+    loadingOverlay.style.display = 'flex';
+    loadingOverlay.style.opacity = '0';
+    setTimeout(() => {
+        loadingOverlay.style.transition = 'opacity 0.3s ease';
+        loadingOverlay.style.opacity = '1';
+    }, 10);
+    setTimeout(() => {
+        loadingOverlay.style.opacity = '0';
+        setTimeout(() => {
+            loadingOverlay.style.display = 'none';
+            btnText.style.display = 'inline';
+            btnLoader.style.display = 'none';
+            buyBtn.disabled = false;
+            buyBtn.style.opacity = '1';
+            document.getElementById('topup-form').submit();
+        }, 300);
+    }, 2500);
+}
+
+function showNotification(message, type = 'success') {
+    const toast = document.getElementById('notification-toast');
+    const toastMessage = document.getElementById('toast-message');
+    toastMessage.textContent = message;
+    if (type === 'error') {
+        toast.style.background = '#f44336';
+    } else if (type === 'warning') {
+        toast.style.background = '#ff9800';
+    } else {
+        toast.style.background = '#4CAF50';
+    }
+    toast.style.display = 'block';
+    toast.style.animation = 'slideIn 0.3s ease-out';
+    setTimeout(() => {
+        toast.style.animation = 'slideOut 0.3s ease-in';
+        setTimeout(() => { toast.style.display = 'none'; }, 300);
+    }, 3000);
+}
+
+function showSuccessModal() {
+    const modal = document.getElementById('success-modal');
+    modal.style.display = 'flex';
+    modal.style.opacity = '0';
+    setTimeout(() => {
+        modal.style.transition = 'opacity 0.3s ease';
+        modal.style.opacity = '1';
+    }, 10);
+}
+
+function closeSuccessModal() {
+    const modal = document.getElementById('success-modal');
+    modal.style.opacity = '0';
+    setTimeout(() => { modal.style.display = 'none'; }, 300);
+}
+
+function toggleFaq(element) {
+    const answer = element.querySelector('.faq-answer');
+    const icon = element.querySelector('.faq-icon');
+    const isActive = element.classList.contains('active');
+    document.querySelectorAll('.faq-item').forEach(item => {
+        item.classList.remove('active');
+        item.querySelector('.faq-answer').style.display = 'none';
+        item.querySelector('.faq-icon').textContent = '+';
+    });
+    if (!isActive) {
+        element.classList.add('active');
+        answer.style.display = 'block';
+        answer.style.animation = 'fadeIn 0.3s ease';
+        icon.textContent = '−';
+    }
+}
+
+function enterSite() {
+    const modal = document.getElementById("welcome-modal");
+    modal.style.transition = "opacity 0.5s ease";
+    modal.style.opacity = '0';
+    setTimeout(() => { modal.style.display = "none"; }, 500);
+    showNotification('Welcome to Shensi Store!', 'success');
+}
+
+window.addEventListener('beforeunload', function() {
+    if (bannerInterval) clearInterval(bannerInterval);
+    if (statsInterval) clearInterval(statsInterval);
+});
+
+window.addEventListener('error', function(e) {
+    console.error('Global error:', e.message);
+});
+
+console.log('%c🎮 Shensi Store ', 'background: #4CAF50; color: white; font-size: 20px; padding: 10px;');
+console.log('%cWelcome to Roblox Top-Up System', 'color: #4CAF50; font-size: 14px;');
+console.log('%cVersion: 2.0.0 Enhanced', 'color: #999; font-size: 12px;');
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Panel | Shensi Store</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+</head>
+
+<body>
+
+<nav>
+    <div class="container logo">
+        <img src="{{ url_for('static', filename='images/dexdexx.PNG') }}">
+        <h1 class="nav-brand-title">Admin Panel</h1>
+    </div>
+    <a href="/admin_logout" class="logout-btn">Logout</a>
+</nav>
+
+<main class="container">
+
+{% if success %}
+<div class="alert-success">
+    ✅ Prices updated successfully
+</div>
+{% endif %}
+
+<section class="glass">
+    <div class="admin-game-header">
+        <img src="{{ url_for('static', filename='images/mlbb.jpg') }}" class="admin-game-logo">
+        <h2>Mobile Legends Prices</h2>
+    </div>
+
+    <form method="POST">
+        <div class="price-grid">
+            {% for item in mlbb_items %}
+            <div class="price-card">
+                <h3>{{ item.name }}</h3>
+                <input type="number" step="0.01"
+                       name="mlbb_{{ item.id }}"
+                       value="{{ item.price }}">
+            </div>
+            {% endfor %}
+        </div>
+
+
+                <div class="admin-game-header" style="margin-top:2.5rem;">
+            <img src="{{ url_for('static', filename='images/freefire.jpg') }}" class="admin-game-logo">
+            <h2>Free Fire Prices</h2>
+        </div>
+
+        <div class="price-grid">
+            {% for item in ff_items %}
+            <div class="price-card">
+                <h3>{{ item.name }}</h3>
+                <input type="number" step="0.01"
+                       name="ff_{{ item.id }}"
+                       value="{{ item.price }}">
+            </div>
+            {% endfor %}
+        </div>
+
+        <button type="submit" class="btn-save">💾 Save Changes</button>
+    </form>
+</section>
+
+
+</main>
+
+<footer>
+    © 2025 Shensi Store • Admin Dashboard
+</footer>
+
+</body>
+</html>

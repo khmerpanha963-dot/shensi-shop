@@ -1,0 +1,210 @@
+:root{
+    --primary:#6366f1;
+    --secondary:#ec4899;
+    --dark:#020617;
+    --glass:rgba(255,255,255,0.08);
+    --border:rgba(255,255,255,0.15);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+    font-family:'Roboto',sans-serif;
+    background: radial-gradient(circle at top, #1e293b, #020617);
+    color:white;
+}
+
+/* Navbar */
+nav{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:1rem 1.5rem;
+    background:rgba(0,0,0,.45);
+    border-bottom:1px solid var(--border);
+    backdrop-filter:blur(10px);
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:0.8rem;
+}
+
+.logo img{width:48px}
+
+.nav-brand-title{
+    font-size:1.6rem;
+    font-weight:800;
+}
+
+.logout-btn{
+    background:linear-gradient(135deg,var(--secondary),#fb7185);
+    padding:0.6rem 1.2rem;
+    border-radius:12px;
+    color:white;
+    text-decoration:none;
+    font-weight:700;
+    transition:.3s;
+}
+
+.logout-btn:hover{
+    transform:scale(1.05);
+    box-shadow:0 10px 25px rgba(236,72,153,.5);
+}
+
+/* Container */
+.container{
+    max-width:1100px;
+    margin:auto;
+    padding:1.5rem;
+}
+
+/* Glass */
+.glass{
+    background:var(--glass);
+    border:1px solid var(--border);
+    backdrop-filter:blur(14px);
+    border-radius:18px;
+    padding:2rem;
+    box-shadow:0 25px 45px rgba(0,0,0,.5);
+}
+
+/* Alerts */
+.alert-success{
+    background:linear-gradient(135deg,#22c55e,#16a34a);
+    padding:1rem;
+    border-radius:14px;
+    text-align:center;
+    font-weight:700;
+    margin-bottom:1.5rem;
+}
+
+/* Price Grid */
+.price-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+    gap:1rem;
+    margin-top:1rem;
+}
+
+/* Price Card */
+.price-card{
+    background:rgba(0,0,0,.45);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:1rem;
+    text-align:center;
+    transition:.3s;
+}
+
+.price-card:hover{
+    transform:translateY(-5px) scale(1.03);
+    box-shadow:0 15px 35px rgba(99,102,241,.4);
+}
+
+.price-card h3{
+    font-size:1rem;
+    margin-bottom:0.6rem;
+    color:#fde68a;
+}
+
+/* Inputs */
+.price-card input{
+    width:100%;
+    padding:0.6rem;
+    border-radius:10px;
+    border:1px solid var(--border);
+    background:#020617;
+    color:white;
+    font-size:1rem;
+    text-align:center;
+}
+
+.price-card input:focus{
+    border-color:var(--secondary);
+    outline:none;
+}
+
+/* Save Button */
+.btn-save{
+    width:100%;
+    margin-top:2rem;
+    padding:1rem;
+    border:none;
+    border-radius:16px;
+    font-size:1.1rem;
+    font-weight:800;
+    cursor:pointer;
+    background:linear-gradient(135deg,var(--primary),var(--secondary));
+    color:white;
+    transition:.3s;
+}
+
+.btn-save:hover{
+    transform:translateY(-4px) scale(1.03);
+    box-shadow:0 20px 40px rgba(236,72,153,.6);
+}
+
+/* Footer */
+footer{
+    text-align:center;
+    padding:2rem;
+    color:#9ca3af;
+}
+
+/* Responsive */
+@media(max-width:768px){
+    .nav-brand-title{font-size:1.3rem}
+}
+
+
+
+/* Login */
+.login-box{
+    max-width:400px;
+    margin:4rem auto;
+    text-align:center;
+}
+
+.login-logo{
+    width:90px;
+    margin-bottom:1rem;
+}
+
+.login-box input{
+    width:100%;
+    padding:0.8rem;
+    margin-top:0.8rem;
+    border-radius:12px;
+    background:#020617;
+    border:1px solid var(--border);
+    color:white;
+    font-size:1rem;
+}
+
+.login-box input:focus{
+    outline:none;
+    border-color:var(--secondary);
+}
+
+.login-error{
+    color:#f87171;
+    font-weight:700;
+    margin-bottom:0.8rem;
+}
+
+/* Admin game headers */
+.admin-game-header{
+    display:flex;
+    align-items:center;
+    gap:1rem;
+    margin-bottom:1rem;
+}
+
+.admin-game-logo{
+    width:54px;
+    height:54px;
+    border-radius:12px;
+    box-shadow:0 8px 20px rgba(0,0,0,.5);
+}
